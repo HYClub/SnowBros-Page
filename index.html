@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雪人兄弟 Snow Bros — 演示页</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================== 顶部 Hero: 自动战斗演示 ===================== -->
+<header class="hero">
+  <canvas id="stage" width="960" height="400"></canvas>
+  <div class="hero-veil"></div>
+  <div class="hero-content">
+    <div class="logo">雪人兄弟</div>
+    <div class="sub">SNOW BROS</div>
+    <div class="tagline">致敬 1990 经典街机 · 像素闯关演示</div>
+    <div class="chips">
+      <span class="chip">❄ 雪球冻结</span>
+      <span class="chip">⛄ 踢滚雪球</span>
+      <span class="chip">🌀 连锁清除</span>
+    </div>
+    <div class="hero-note">↓ 背景为自动演示动画,素材来自游戏内美术(开发中占位) ↓</div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- 简介 -->
+  <section class="card">
+    <h2>游戏简介</h2>
+    <p>一场冰天雪地里的街机冒险——敌人一波接一波从两侧涌来,追逐着你的雪人角色。
+    你的武器只有雪球:向敌人连续抛投,冻住它们,再把它们踢成滚动的巨型雪球,
+    让雪球撞碎路上的所有敌人。清空一波,冲向下一个挑战。</p>
+  </section>
+
+  <!-- 玩法特色 -->
+  <section class="card">
+    <h2>玩法特色</h2>
+    <ul>
+      <li><b>雪球冻结</b> — 抛出的雪球累计命中 3 次,敌人被冻成冰坨</li>
+      <li><b>踢成雪球</b> — 靠近冰冻的敌人把它踢出去,变成滚动雪球</li>
+      <li><b>连锁清除</b> — 滚雪球沿路碾碎敌人,撞到更多雪球还能一起滚</li>
+      <li><b>追逐与躲避</b> — 敌人会盯上你并加速追来,注意走位与时机</li>
+      <li><b>平台与爬梯</b> — 利用地形高度差,在空中和地面周旋敌人</li>
+      <li><b>计分计时</b> — 每波清空结算得分与用时,挑战更高成绩</li>
+    </ul>
+  </section>
+
+  <!-- 敌人图鉴 -->
+  <section class="card">
+    <h2>敌人图鉴</h2>
+    <div class="bestiary">
+      <div class="b-item">
+        <canvas class="preview" width="192" height="96" data-char="walker" data-state="run"></canvas>
+        <h3>巡逻雪怪 <span class="en">Walker</span></h3>
+        <p>在地面来回巡逻,撞到障碍或平台边缘会掉头。一旦发现你,就会进入追逐模式,
+        加速向你逼近——这是你最常见的威胁。</p>
+      </div>
+      <div class="b-item">
+        <canvas class="preview" width="192" height="96" data-char="flyer" data-state="fly"></canvas>
+        <h3>飞行雪怪 <span class="en">Flyer</span></h3>
+        <p>不落地,沿波浪轨迹在空中穿梭飞行,从上方包抄你的行动路线。
+        冻结后会先坠落地面,给你可乘之机。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页面说明 -->
+  <section class="card">
+    <h2>关于本站</h2>
+    <p>本站是 <b>Snow Bros(雪人兄弟)</b> 项目的公开演示主页,当前处于开发中 MVP 阶段:
+    页面背景动画直接调用游戏内的像素美术素材,自动循环演示「追怪 → 被追 → 冻怪 → 踢雪球连锁」。
+    项目仍在迭代,后续会补充实机截图与在线试玩入口。</p>
+  </section>
+
+  <footer>Snow Bros · 演示页面 — 像素素材为开发占位图,正式美术制作中</footer>
+</main>
+
+<script src="app.js" defer></script>
+</body>
+</html>

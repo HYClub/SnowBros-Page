@@ -1,0 +1,120 @@
+/* ===== 雪人兄弟 Snow Bros · 演示页 ===== */
+:root {
+  --deep: #081426;
+  --mid: #123a63;
+  --sky1: #0b1d38;
+  --ice: #8fdcff;
+  --ice-bright: #c8f0ff;
+  --white: #eef7ff;
+  --dim: #9fc4dd;
+  --card: rgba(18, 58, 99, 0.42);
+  --line: rgba(143, 220, 255, 0.28);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { background: var(--deep); }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+  color: var(--white);
+  background:
+    radial-gradient(ellipse at 50% -10%, #123a63 0%, #0b1d38 45%, #081426 100%);
+  min-height: 100vh;
+}
+
+/* ===== Hero ===== */
+.hero { position: relative; width: 100%; overflow: hidden; }
+#stage {
+  display: block; width: 100%; height: auto;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  background: linear-gradient(#5f9fd0 0%, #cfe9f8 35%, #eaf6fd 55%, #cddce8 70%, #9ab6cc 82%);
+}
+.hero-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg,
+    rgba(8, 20, 38, 0.10) 0%,
+    rgba(8, 20, 38, 0.35) 38%,
+    rgba(8, 20, 38, 0.62) 72%,
+    var(--deep) 100%);
+  pointer-events: none;
+}
+.hero-content {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; pointer-events: none;
+  padding: 20px;
+}
+.logo {
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 900; letter-spacing: 0.25em; text-indent: 0.25em;
+  color: var(--white);
+  text-shadow: 0 0 22px rgba(143, 220, 255, 0.85), 0 4px 0 rgba(8,20,38,0.35);
+}
+.sub {
+  margin-top: 4px; font-size: clamp(14px, 2.4vw, 22px);
+  letter-spacing: 0.7em; text-indent: 0.7em; font-weight: 700;
+  color: var(--ice); text-shadow: 0 0 14px rgba(143,220,255,0.6);
+}
+.tagline {
+  margin-top: 14px; font-size: clamp(13px, 1.9vw, 17px); color: var(--ice-bright);
+  text-shadow: 0 1px 3px rgba(8,20,38,0.8);
+}
+.chips { margin-top: 16px; display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+.chip {
+  font-size: 13px; color: var(--ice-bright);
+  border: 1px solid rgba(200, 240, 255, 0.55);
+  background: rgba(8, 20, 38, 0.30);
+  border-radius: 20px; padding: 5px 14px;
+  backdrop-filter: blur(2px);
+}
+.hero-note {
+  position: absolute; bottom: 10px; left: 0; right: 0;
+  font-size: 12px; color: rgba(238, 247, 255, 0.75);
+  text-shadow: 0 1px 2px rgba(8,20,38,0.9);
+}
+
+/* ===== 正文卡片 ===== */
+.wrap { max-width: 960px; margin: 0 auto; padding: 8px 20px 40px; }
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-top: 22px;
+  backdrop-filter: blur(4px);
+}
+h2 {
+  font-size: 21px; color: var(--ice); letter-spacing: 2px;
+  margin-bottom: 12px; border-bottom: 1px solid var(--line); padding-bottom: 8px;
+}
+p { line-height: 1.95; font-size: 15px; color: var(--white); }
+ul { margin: 8px 0 0 20px; line-height: 2.1; font-size: 15px; }
+li::marker { color: var(--ice); }
+li b { color: var(--ice-bright); }
+
+/* 敌人图鉴 */
+.bestiary {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px; margin-top: 6px;
+}
+.b-item {
+  border: 1px solid var(--line); border-radius: 10px;
+  padding: 14px; background: rgba(8, 20, 38, 0.25);
+}
+.preview {
+  display: block; width: 100%; height: auto;
+  image-rendering: pixelated; image-rendering: crisp-edges;
+  background: linear-gradient(#bfe3f7 0%, #eaf6fd 60%, #a8c4d8 100%);
+  border-radius: 8px; border: 1px solid rgba(143,220,255,0.2);
+}
+.b-item h3 { font-size: 16px; color: var(--ice-bright); margin: 8px 0 6px; }
+.b-item .en { font-size: 12px; color: var(--dim); font-weight: 400; letter-spacing: 1px; }
+.b-item p { font-size: 13.5px; line-height: 1.8; color: var(--white); }
+
+footer {
+  text-align: center; margin: 34px 0 8px;
+  font-size: 12.5px; color: var(--dim);
+}
+
+@media (max-width: 560px) {
+  .card { padding: 18px; }
+}
