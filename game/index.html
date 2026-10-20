@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>雪人兄弟 Snow Bros — 试玩</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%; overflow: hidden;
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    background: #081426; color: #eef7ff;
+  }
+
+  /* ===== 背景：夜空 + 远山雪丘 ===== */
+  #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; display: block; }
+  /* ===== 前景：飘雪（不挡交互） ===== */
+  #snow { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 30; pointer-events: none; display: block; }
+
+  /* ===== 页面布局 ===== */
+  .page {
+    position: relative; z-index: 10; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; padding: 16px;
+  }
+  .game-header { text-align: center; }
+  .game-header .title {
+    font-size: clamp(26px, 4.6vw, 44px); font-weight: 900; letter-spacing: 0.18em;
+    background: linear-gradient(180deg, #ffffff 0%, #c8f0ff 55%, #8fdcff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+    text-shadow: 0 0 26px rgba(143,220,255,0.55);
+  }
+  .game-header .title .en { font-size: 0.5em; letter-spacing: 0.5em; opacity: 0.8; -webkit-text-fill-color: #9fc4dd; }
+  .game-header .sub { margin-top: 6px; font-size: 13px; letter-spacing: 0.3em; color: #9fc4dd; }
+
+  /* ===== 冰霜边框舞台 ===== */
+  .stage-frame {
+    position: relative;
+    padding: 14px;
+    border-radius: 18px;
+    background: rgba(18, 58, 99, 0.35);
+    border: 1px solid rgba(143, 220, 255, 0.45);
+    box-shadow: 0 0 40px rgba(143,220,255,0.30), inset 0 0 24px rgba(143,220,255,0.10);
+    backdrop-filter: blur(3px);
+  }
+  /* 边框四角的雪花装饰 */
+  .stage-frame::before, .stage-frame::after {
+    content: "❄"; position: absolute; font-size: 18px; color: rgba(200,240,255,0.65);
+    text-shadow: 0 0 10px rgba(143,220,255,0.7);
+  }
+  .stage-frame::before { top: 6px; left: 10px; }
+  .stage-frame::after  { bottom: 6px; right: 10px; }
+
+  #unity-container.unity-desktop {
+    position: relative;
+    width: 960px; max-width: 86vw;
+  }
+  #unity-canvas {
+    width: 960px; height: 600px; max-width: 86vw; height: auto; aspect-ratio: 960 / 600;
+    background: #0b1d38;
+    border-radius: 8px; display: block;
+    image-rendering: pixelated; image-rendering: crisp-edges;
+  }
+
+  /* 占位（Unity 未载入时显示） */
+  .stage-placeholder {
+    position: absolute; inset: 14px; border-radius: 8px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px; color: #bfe3f7; background: radial-gradient(ellipse at 50% 35%, #15375e, #0b1d38);
+    pointer-events: none;
+  }
+  .stage-placeholder .big { font-size: 54px; filter: drop-shadow(0 0 14px rgba(143,220,255,0.8)); animation: spin 8s linear infinite; }
+  .stage-placeholder .t { font-size: 14px; letter-spacing: 0.2em; color: #9fc4dd; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 载入条（仿主题色） */
+  #unity-loading-bar {
+    position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%);
+    width: 70%; max-width: 480px;
+  }
+  #unity-loading-bar .bar { height: 14px; border-radius: 8px; overflow: hidden; border: 1px solid rgba(143,220,255,0.5); background: rgba(8,20,38,0.6); }
+  #unity-progress-bar-full { width: 0%; height: 100%; background: linear-gradient(90deg, #8fdcff, #c8f0ff); box-shadow: 0 0 12px rgba(143,220,255,0.8); transition: width 0.2s; }
+  #unity-build-title { text-align: center; margin-top: 10px; font-size: 13px; letter-spacing: 0.25em; color: #bfe3f7; }
+  #unity-warning { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; color: #ffd0d0; font-size: 14px; padding: 20px; text-align: center; }
+
+  .game-footer { font-size: 12.5px; color: rgba(238,247,255,0.7); letter-spacing: 0.05em; }
+  .game-footer b { color: #c8f0ff; }
+
+  @media (max-width: 560px) {
+    .game-header .title { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg"></canvas>
+<canvas id="snow"></canvas>
+
+<div class="page">
+  <div class="game-header">
+    <div class="title">❄ 雪人兄弟 <span class="en">SNOW BROS</span> ❄</div>
+    <div class="sub">在线试玩 · WEBGL</div>
+  </div>
+
+  <div class="stage-frame">
+    <div id="unity-container" class="unity-desktop">
+      <canvas id="unity-canvas" width="960" height="600" tabindex="-1"></canvas>
+      <div class="stage-placeholder" id="placeholder">
+        <div class="big">❄</div>
+        <div class="t">游戏画面区域</div>
+      </div>
+      <div id="unity-loading-bar">
+        <div class="bar"><div id="unity-progress-bar-full"></div></div>
+        <div id="unity-build-title">载入中…</div>
+      </div>
+      <div id="unity-warning"></div>
+    </div>
+  </div>
+
+  <div class="game-footer">提示：<b>WASD / 方向键</b> 移动 · <b>J</b> 抛雪球 · <b>空格</b> 跳跃 · <b>1P 加入</b> 开始</div>
+</div>
+
+<script>
+/* ===================== 雪景背景（夜空 + 远山雪丘） ===================== */
+(function () {
+  const bg = document.getElementById('bg');
+  const bx = bg.getContext('2d');
+  function drawBg() {
+    const w = bg.width = innerWidth, h = bg.height = innerHeight;
+    // 夜空渐变
+    const sky = bx.createLinearGradient(0, 0, 0, h);
+    sky.addColorStop(0, '#050d1c');
+    sky.addColorStop(0.45, '#0b1d38');
+    sky.addColorStop(0.8, '#123a63');
+    sky.addColorStop(1, '#1b4a78');
+    bx.fillStyle = sky; bx.fillRect(0, 0, w, h);
+    // 月光
+    const mx = w * 0.78, my = h * 0.22;
+    const glow = bx.createRadialGradient(mx, my, 0, mx, my, h * 0.5);
+    glow.addColorStop(0, 'rgba(220,240,255,0.55)');
+    glow.addColorStop(0.15, 'rgba(200,230,255,0.18)');
+    glow.addColorStop(1, 'rgba(200,230,255,0)');
+    bx.fillStyle = glow; bx.fillRect(0, 0, w, h);
+    bx.beginPath(); bx.arc(mx, my, h * 0.06, 0, 6.283); bx.fillStyle = '#eaf6fd'; bx.fill();
+    // 远山雪丘（多层）
+    const hills = [
+      { y: h * 0.62, col: 'rgba(150,185,215,0.55)', amp: 40 },
+      { y: h * 0.72, col: 'rgba(190,215,235,0.7)', amp: 55 },
+      { y: h * 0.84, col: '#cfe2ee', amp: 70 }
+    ];
+    for (const hl of hills) {
+      bx.fillStyle = hl.col;
+      bx.beginPath();
+      bx.moveTo(0, h);
+      bx.lineTo(0, hl.y);
+      for (let x = 0; x <= w; x += 20) {
+        const y = hl.y - Math.abs(Math.sin(x * 0.004 + hl.y)) * hl.amp - Math.sin(x * 0.011) * 8;
+        bx.lineTo(x, y);
+      }
+      bx.lineTo(w, h); bx.closePath(); bx.fill();
+    }
+  }
+
+  /* ===================== 飘雪 ===================== */
+  const snow = document.getElementById('snow');
+  const sx = snow.getContext('2d');
+  let flakes = [];
+  function resizeSnow() {
+    snow.width = innerWidth; snow.height = innerHeight;
+    const n = Math.min(240, Math.floor(innerWidth * innerHeight / 8000));
+    flakes = [];
+    for (let i = 0; i < n; i++) flakes.push(makeFlake());
+  }
+  function makeFlake() {
+    return {
+      x: Math.random() * snow.width,
+      y: Math.random() * snow.height,
+      r: 1 + Math.random() * 3.2,
+      s: 0.4 + Math.random() * 1.6,
+      d: Math.random() * 6.283,
+      ds: 0.004 + Math.random() * 0.012
+    };
+  }
+  function tickSnow() {
+    sx.clearRect(0, 0, snow.width, snow.height);
+    for (const f of flakes) {
+      f.y += f.s; f.d += f.ds; f.x += Math.sin(f.d) * 0.6;
+      if (f.y > snow.height + 6) { f.y = -6; f.x = Math.random() * snow.width; }
+      if (f.x < -6) f.x = snow.width + 6; else if (f.x > snow.width + 6) f.x = -6;
+      sx.beginPath();
+      sx.arc(f.x, f.y, f.r, 0, 6.283);
+      sx.fillStyle = 'rgba(255,255,255,' + (0.45 + (f.r / 4) * 0.5).toFixed(2) + ')';
+      sx.fill();
+    }
+    requestAnimationFrame(tickSnow);
+  }
+
+  function resize() { drawBg(); resizeSnow(); }
+  window.addEventListener('resize', resize);
+  resize();
+  tickSnow();
+})();
+
+/* ===================== Unity WebGL 载入（与正式页同构） ===================== */
+var buildUrl = "Build";
+var loaderUrl = buildUrl + "/WebGL.loader.js";
+var config = {
+  dataUrl: buildUrl + "/WebGL.data.unityweb",
+  frameworkUrl: buildUrl + "/WebGL.framework.js.unityweb",
+  codeUrl: buildUrl + "/WebGL.wasm.unityweb",
+  streamingAssetsUrl: "StreamingAssets",
+  companyName: "HYClub",
+  productName: "SnowBros",
+  productVersion: "1.0",
+  showBanner: unityShowBanner,
+};
+function unityShowBanner(msg, type) {
+  var warning = document.querySelector("#unity-warning");
+  warning.style.display = "flex";
+  warning.innerHTML = msg;
+}
+var container = document.querySelector("#unity-container");
+var canvas = document.querySelector("#unity-canvas");
+var loadingBar = document.querySelector("#unity-loading-bar");
+var progressBarFull = document.querySelector("#unity-progress-bar-full");
+var placeholder = document.querySelector("#placeholder");
+loadingBar.style.display = "block";
+var script = document.createElement("script");
+script.src = loaderUrl;
+script.onload = () => {
+  createUnityInstance(canvas, config, (progress) => {
+    progressBarFull.style.width = 100 * progress + "%";
+  }).then((unityInstance) => {
+    loadingBar.style.display = "none";
+    if (placeholder) placeholder.style.display = "none";
+  }).catch((message) => {
+    if (placeholder) placeholder.querySelector(".t").textContent = "游戏载入失败（需在本地服务器打开）";
+    var w = document.querySelector("#unity-warning");
+    w.style.display = "flex"; w.innerHTML = message;
+  });
+};
+document.body.appendChild(script);
+</script>
+</body>
+</html>

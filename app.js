@@ -343,45 +343,9 @@
     }
   }
 
-  // ---------- 图鉴预览 ----------
-  function runPreview(cv) {
-    const c = cv.getContext('2d');
-    c.imageSmoothingEnabled = false;
-    const start = performance.now() / 1000;
-    const ch = cv.dataset.char, st = cv.dataset.state;
-    const framesArr = img[ch][st];
-    const cw = cv.width, chh = cv.height;
-    const gy = chh - 26;
-    function tick(now) {
-      const t = (now / 1000) - start;
-      c.clearRect(0, 0, cw, chh);
-      const g = c.createLinearGradient(0, 0, 0, chh);
-      g.addColorStop(0, '#bfe3f7'); g.addColorStop(1, '#cfe2ee');
-      c.fillStyle = g; c.fillRect(0, 0, cw, chh);
-      c.fillStyle = '#c3dbe9'; c.fillRect(0, gy, cw, chh - gy);
-      c.fillStyle = 'rgba(255,255,255,0.5)'; c.fillRect(0, gy, cw, 3);
-      for (let tx = 0; tx < cw; tx += 32) c.drawImage(tileGround, tx, gy + 3, 32, 32);
-      const x = cw / 2 + Math.sin(t * 1.1) * cw * 0.22;
-      let y = gy, flip = 1, im = frame(framesArr, t, 8);
-      if (st === 'fly') {
-        y = chh * 0.42 + Math.sin(t * 2.2) * 10;
-        x = cw / 2 + Math.sin(t * 0.9) * cw * 0.24;
-        flip = Math.sin(t * 0.9 + Math.PI / 2) >= 0 ? 1 : -1;
-        im = frame(framesArr, t + Math.sin(t), 9);
-      } else {
-        flip = Math.cos(t * 1.1) >= 0 ? 1 : -1;
-      }
-      drawChar(c, im, x, y, 48, flip);
-      shadow(c, x, y + 2, 20);
-      requestAnimationFrame(tick);
-    }
-    requestAnimationFrame(tick);
-  }
-
   // ---------- 启动 ----------
   loadAll().then(() => {
     ready = true;
-    for (const e of document.querySelectorAll('.preview')) runPreview(e);
     makeWalker(-1); makeWalker(1); spawnT = rand(1.6, 2.6);
     let last = performance.now();
     let t = 0;
@@ -394,4 +358,35 @@
     }
     requestAnimationFrame(loop);
   });
+})();
+
+/* ===== 全屏飘雪（与内页一致的雪景氛围） ===== */
+(() => {
+  const c = document.getElementById('snow');
+  if (!c) return;
+  const x = c.getContext('2d');
+  let flakes = [];
+  function mk() {
+    return { x: Math.random() * c.width, y: Math.random() * c.height, r: 1 + Math.random() * 3.2, s: 0.4 + Math.random() * 1.6, d: Math.random() * 6.283, ds: 0.004 + Math.random() * 0.012 };
+  }
+  function resize() {
+    c.width = innerWidth; c.height = innerHeight;
+    const n = Math.min(240, Math.floor(innerWidth * innerHeight / 8000));
+    flakes = [];
+    for (let i = 0; i < n; i++) flakes.push(mk());
+  }
+  function tick() {
+    x.clearRect(0, 0, c.width, c.height);
+    for (const f of flakes) {
+      f.y += f.s; f.d += f.ds; f.x += Math.sin(f.d) * 0.6;
+      if (f.y > c.height + 6) { f.y = -6; f.x = Math.random() * c.width; }
+      if (f.x < -6) f.x = c.width + 6; else if (f.x > c.width + 6) f.x = -6;
+      x.beginPath(); x.arc(f.x, f.y, f.r, 0, 6.283);
+      x.fillStyle = 'rgba(255,255,255,' + (0.45 + (f.r / 4) * 0.5).toFixed(2) + ')';
+      x.fill();
+    }
+    requestAnimationFrame(tick);
+  }
+  window.addEventListener('resize', resize);
+  resize(); tick();
 })();

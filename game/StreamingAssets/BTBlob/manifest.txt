@@ -1,0 +1,6 @@
+# HYC BT Blob manifest
+# 格式: treeId|资产名   (由菜单 HYC Framework/BT/Export Blob (For Build) 自动生成, 请勿手改)
+# version=1
+4773160260407033859|Boss_AI
+4773160260407033858|Flyer_AI
+4773160260407033857|Walker_AI

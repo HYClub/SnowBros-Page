@@ -8,6 +8,9 @@
 </head>
 <body>
 
+<!-- 全屏飘雪（不挡交互） -->
+<canvas id="snow"></canvas>
+
 <!-- ===================== 顶部 Hero: 自动战斗演示 ===================== -->
 <header class="hero">
   <canvas id="stage" width="960" height="400"></canvas>
@@ -21,6 +24,7 @@
       <span class="chip">⛄ 踢滚雪球</span>
       <span class="chip">🌀 连锁清除</span>
     </div>
+    <a class="play-btn" href="game/index.html">▶ 在线试玩 WebGL</a>
     <div class="hero-note">↓ 背景为自动演示动画,素材来自游戏内美术(开发中占位) ↓</div>
   </div>
 </header>
@@ -47,31 +51,13 @@
     </ul>
   </section>
 
-  <!-- 敌人图鉴 -->
-  <section class="card">
-    <h2>敌人图鉴</h2>
-    <div class="bestiary">
-      <div class="b-item">
-        <canvas class="preview" width="192" height="96" data-char="walker" data-state="run"></canvas>
-        <h3>巡逻雪怪 <span class="en">Walker</span></h3>
-        <p>在地面来回巡逻,撞到障碍或平台边缘会掉头。一旦发现你,就会进入追逐模式,
-        加速向你逼近——这是你最常见的威胁。</p>
-      </div>
-      <div class="b-item">
-        <canvas class="preview" width="192" height="96" data-char="flyer" data-state="fly"></canvas>
-        <h3>飞行雪怪 <span class="en">Flyer</span></h3>
-        <p>不落地,沿波浪轨迹在空中穿梭飞行,从上方包抄你的行动路线。
-        冻结后会先坠落地面,给你可乘之机。</p>
-      </div>
-    </div>
-  </section>
-
   <!-- 页面说明 -->
   <section class="card">
     <h2>关于本站</h2>
     <p>本站是 <b>Snow Bros(雪人兄弟)</b> 项目的公开演示主页,当前处于开发中 MVP 阶段:
     页面背景动画直接调用游戏内的像素美术素材,自动循环演示「追怪 → 被追 → 冻怪 → 踢雪球连锁」。
-    项目仍在迭代,后续会补充实机截图与在线试玩入口。</p>
+    现已支持<b>浏览器内在线试玩</b>(WebGL 构建,无需下载安装,点击顶部「▶ 在线试玩 WebGL」即可)。
+    项目仍在迭代,后续会补充更多关卡与正式美术。</p>
   </section>
 
   <footer>Snow Bros · 演示页面 — 像素素材为开发占位图,正式美术制作中</footer>
