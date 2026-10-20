@@ -203,6 +203,46 @@
   tickSnow();
 })();
 
+/* ===================== 错误自显层（避免静默蓝屏） ===================== */
+function wbShowError(msg, opt) {
+  var w = document.getElementById("unity-warning");
+  if (!w) return;
+  w.style.display = "flex";
+  var extra = opt ? ('<div style="margin-top:8px;font-size:12px;opacity:.8">' + opt + '</div>') : '';
+  w.innerHTML = '<div style="max-width:520px;">' + msg + extra + '</div>';
+  var ph = document.getElementById("placeholder");
+  if (ph) ph.style.display = "none";
+}
+window.addEventListener("error", function (e) {
+  var m = e.message || (e.error && e.error.message) || "脚本错误";
+  wbShowError("⚠ 运行出错：" + m);
+});
+window.addEventListener("unhandledrejection", function (e) {
+  var r = e.reason; var m = (r && (r.message || r)) || "Promise 失败";
+  wbShowError("⚠ 加载失败：" + m);
+});
+// 把 console.error/warn 也透出到画面，方便无 F12 排查
+["error", "warn"].forEach(function (lv) {
+  var orig = console[lv] ? console[lv].bind(console) : function () {};
+  console[lv] = function () {
+    try {
+      var s = Array.prototype.map.call(arguments, function (a) {
+        return (a && a.message) ? a.message : (typeof a === "object" ? JSON.stringify(a) : String(a));
+      }).join(" ");
+      if (/error|fail|exception|404|timeout|abort/i.test(s)) wbShowError("⚠ " + s);
+    } catch (e) {}
+    orig.apply(null, arguments);
+  };
+});
+// 加载看门狗：45s 仍无实例 → 提示网络/VPN 可能截断大文件
+var wbBooted = false;
+setTimeout(function () {
+  if (!wbBooted) wbShowError(
+    "⏳ 载入超过 45 秒仍未完成",
+    "WebGL 构建较大（wasm ~9MB），若卡在蓝屏多半是网络/代理（如浏览器 VPN 扩展）截断了大文件下载。<br>建议：关闭 VPN 扩展或用无痕窗口重新打开本页；也可清空站点缓存（含 UnityCache/IndexedDB）后重试。"
+  );
+}, 45000);
+
 /* ===================== Unity WebGL 载入（与正式页同构） ===================== */
 var buildUrl = "Build";
 var loaderUrl = buildUrl + "/WebGL.loader.js";
@@ -233,6 +273,7 @@ script.onload = () => {
   createUnityInstance(canvas, config, (progress) => {
     progressBarFull.style.width = 100 * progress + "%";
   }).then((unityInstance) => {
+    wbBooted = true;
     loadingBar.style.display = "none";
     if (placeholder) placeholder.style.display = "none";
   }).catch((message) => {
