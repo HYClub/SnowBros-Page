@@ -113,7 +113,7 @@
       </div>
       <div id="unity-loading-bar">
         <div class="bar"><div id="unity-progress-bar-full"></div></div>
-        <div id="unity-build-title">载入中…</div>
+        <div id="unity-build-title"></div>
       </div>
       <div id="unity-warning"></div>
     </div>
@@ -234,14 +234,14 @@ window.addEventListener("unhandledrejection", function (e) {
     orig.apply(null, arguments);
   };
 });
-// 加载看门狗：45s 仍无实例 → 提示网络/VPN 可能截断大文件
+// 加载看门狗：90s 仍无实例 → 仅向 Console 打印提示（不占屏幕），避免慢网络/VPN 误报
 var wbBooted = false;
 setTimeout(function () {
-  if (!wbBooted) wbShowError(
-    "⏳ 载入超过 45 秒仍未完成",
-    "WebGL 构建较大（wasm ~9MB），若卡在蓝屏多半是网络/代理（如浏览器 VPN 扩展）截断了大文件下载。<br>建议：关闭 VPN 扩展或用无痕窗口重新打开本页；也可清空站点缓存（含 UnityCache/IndexedDB）后重试。"
+  if (!wbBooted) console.warn(
+    "[SnowBros] 载入超过 90 秒仍未完成：多半是网络/代理（如浏览器 VPN 扩展）截断了大文件下载。" +
+    "建议关闭 VPN 扩展或用无痕窗口重新打开本页；也可清空站点缓存（含 UnityCache/IndexedDB）后重试。"
   );
-}, 45000);
+}, 90000);
 
 /* ===================== Unity WebGL 载入（与正式页同构） ===================== */
 var buildUrl = "Build";
