@@ -10,6 +10,7 @@ ConfigBlob/CfgEffectConfig.blob
 ConfigBlob/CfgItemConfig.blob
 ConfigBlob/CfgLevelConfig.blob
 ConfigBlob/CfgLevelList.blob
+ConfigBlob/CfgPlayerList.blob
 ConfigBlob/CfgProjectileConfig.blob
 ConfigBlob/CfgWaveConfig.blob
 ConfigBlob/Enums/ActorKind.cs
